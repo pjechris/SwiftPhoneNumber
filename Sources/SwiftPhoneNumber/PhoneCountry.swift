@@ -2,7 +2,7 @@ import Foundation
 
 /// Contain information about phone format for a country
 /// Follow international standards
-public struct PhoneCountry {
+public struct PhoneCountry: Equatable {
     /// international code to dial to join the country. For example: "33" for metropolitan France
     public let internationalCode: String
     /// national prefix to dial when calling from the country. For example: "0" for metropolitan France
@@ -10,7 +10,7 @@ public struct PhoneCountry {
     
     public let destinations: Set<Destination>
 
-    init(code: String, nationalCode: String? = nil, destinations: Set<Destination>) {
+    public init(code: String, nationalCode: String? = nil, destinations: Set<Destination>) {
         self.internationalCode = code
         self.nationalCode = nationalCode
         self.destinations = destinations
