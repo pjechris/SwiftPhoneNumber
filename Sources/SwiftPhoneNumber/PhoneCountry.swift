@@ -26,6 +26,7 @@ public extension PhoneCountry {
         
         let type: DestinationType
         let areaCodes: ClosedRange<Int>
-        let length: UInt
+        /// destination length (hence without international nor national prefix)
+        let length: Int
     }
 }
