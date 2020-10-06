@@ -23,7 +23,7 @@ class E164ParserTests: XCTestCase {
         XCTAssertEqual(result.subscriberNumber, "234567890")
     }
     
-    func test__parsing__multipleCountriesMatching__ItReturnCountryMatchingAreaCode() throws {
+    func test__parsing__numberIsInternational__multipleCountriesMatching__ItReturnCountryMatchingAreaCode() throws {
         let countryWithSimilarI18nCode = PhoneCountry(code: testCountry.internationalCode,
                                                       destinations: [
                                                         .init(type: .fixed, areaCodes: 6...7, length: 9)]

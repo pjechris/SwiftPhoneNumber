@@ -3,6 +3,8 @@ import Foundation
 extension PhoneNumber {
     typealias ParsedNumber = (subscriberNumber: String, country: PhoneCountry)
     
+    /// Parse a e164 number by trying to determine its matching country and match its rules
+    /// - Throws: `PhoneNumberError` if no country matching or if number is not a valid number
     static func parsing(_ number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         if number.hasPrefix("+") {
             return try parsing(international: String(number.dropFirst()), countries: countries)
@@ -16,11 +18,16 @@ extension PhoneNumber {
             number.starts(with: country.internationalCode)
         }
         
-        // TODO
-        let areaCode = { (country: PhoneCountry) in
-            country.destinations
+        let areaCode = { (country: PhoneCountry) -> Bool in
+            let number = number.dropFirst(country.internationalCode.count)
+            
+            return country.destinations
                 .map(\.areaCodes)
-                .contains { _ in true }
+                .contains { areaCodes in
+                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))!
+                    
+                    return areaCodes.contains(areaCode)
+            }
         }
         
         return try validate(number,
@@ -36,11 +43,16 @@ extension PhoneNumber {
             country.nationalCode.map(number.hasPrefix) ?? false
         }
         
-        // TODO
-        let areaCode = { (country: PhoneCountry) in
-            country.destinations
+        let areaCode = { (country: PhoneCountry) -> Bool in
+            let number = String(number.dropFirst(country.nationalCode!.count))
+            
+            return country.destinations
                 .map(\.areaCodes)
-                .contains { _ in true }
+                .contains { areaCodes in
+                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))!
+                    
+                    return areaCodes.contains(areaCode)
+            }
         }
         
         return try validate(number,
@@ -51,8 +63,6 @@ extension PhoneNumber {
         })
     }
     
-    /// Parse **international** number by trying to determine its matching country
-    /// - Throws: `PhoneNumberError` if no country matching or if number is not in international format
     private static func validate(_ number: String,
                                  for countries: [PhoneCountry],
                                  conforming filters: (PhoneCountry) -> Bool...,
@@ -90,5 +100,20 @@ extension Array {
         filters.reduce(into: self) { countries, byFilter in
             countries = countries.filter(byFilter)
         }
+    }
+}
+
+extension Int {
+    /// number of digits the number has. For exemple 599 is 3 digits long (5,9,9)
+    var digitsCount: Int {
+        var tmp = self
+        var count = 0
+        
+        while tmp != 0 {
+            tmp = tmp / 10
+            count += 1
+        }
+        
+        return count
     }
 }
