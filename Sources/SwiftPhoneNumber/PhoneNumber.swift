@@ -13,9 +13,9 @@ public struct PhoneNumber: Equatable {
     public var number: String { return "+" + country.internationalCode + subscriberNumber }
     
     public init(number: String, in countries: [PhoneCountry]) throws {
-        let parse = try Self.parsing(number, countries: countries)
+        let result = try Self.parsing(number, countries: countries)
         
-        self.init(subscriberNumber: parse.0, country: parse.1)
+        self.init(subscriberNumber: result.subscriberNumber, country: result.country)
     }
     
     fileprivate init(subscriberNumber: String, country: PhoneCountry) {

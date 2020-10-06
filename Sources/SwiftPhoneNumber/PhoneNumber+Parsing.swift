@@ -1,21 +1,9 @@
 import Foundation
 
-extension String {
-    fileprivate func satisfy(_ characterSet: CharacterSet) -> Bool {
-        unicodeScalars.allSatisfy(characterSet.contains)
-    }
-}
-
-extension Array {
-    fileprivate func filter(by filters: [(Element) -> Bool]) -> [Element] {
-        filters.reduce(into: self) { countries, byFilter in
-            countries = countries.filter(byFilter)
-        }
-    }
-}
-
 extension PhoneNumber {
-    static func parsing(_ number: String, countries: [PhoneCountry]) throws -> (String, PhoneCountry) {
+    typealias ParsedNumber = (subscriberNumber: String, country: PhoneCountry)
+    
+    static func parsing(_ number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         if number.hasPrefix("+") {
             return try parsing(international: String(number.dropFirst()), countries: countries)
         }
@@ -23,7 +11,7 @@ extension PhoneNumber {
         return try parsing(national: number, countries: countries)
     }
     
-    private static func parsing(international number: String, countries: [PhoneCountry]) throws -> (String, PhoneCountry) {
+    private static func parsing(international number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         let internationalCode = { (country: PhoneCountry) in
             number.starts(with: country.internationalCode)
         }
@@ -43,7 +31,7 @@ extension PhoneNumber {
         })
     }
     
-    private static func parsing(national number: String, countries: [PhoneCountry]) throws -> (String, PhoneCountry) {
+    private static func parsing(national number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         let nationalCode = { (country: PhoneCountry) in
             country.nationalCode.map(number.hasPrefix) ?? false
         }
@@ -68,7 +56,8 @@ extension PhoneNumber {
     private static func validate(_ number: String,
                                  for countries: [PhoneCountry],
                                  conforming filters: (PhoneCountry) -> Bool...,
-        reduce: (String, PhoneCountry) -> String) throws -> (String, PhoneCountry) {
+        reduce: (String, PhoneCountry) -> String) throws -> ParsedNumber {
+        
         guard number.satisfy(.decimalDigits) else {
             throw PhoneNumberError.invalidCharacter
         }
@@ -79,13 +68,27 @@ extension PhoneNumber {
             throw PhoneNumberError.noMatchingCountry
         }
         
-        let number = reduce(number, country) // internationalNumber.dropFirst(country.internationalCode.count)
+        let number = reduce(number, country)
         
-        // FIXME remove based on matched areacode
+        // FIXME use matching destination instead of first
         guard number.count == country.destinations.first!.length else {
             throw PhoneNumberError.invalidLength
         }
         
-        return (number, country)
+        return (subscriberNumber: number, country: country)
+    }
+}
+
+extension String {
+    fileprivate func satisfy(_ characterSet: CharacterSet) -> Bool {
+        unicodeScalars.allSatisfy(characterSet.contains)
+    }
+}
+
+extension Array {
+    fileprivate func filter(by filters: [(Element) -> Bool]) -> [Element] {
+        filters.reduce(into: self) { countries, byFilter in
+            countries = countries.filter(byFilter)
+        }
     }
 }
