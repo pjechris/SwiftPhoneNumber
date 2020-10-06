@@ -1,6 +1,6 @@
 import Foundation
 
-extension PhoneNumber {
+enum E164Parser {
     typealias ParsedNumber = (subscriberNumber: String, country: PhoneCountry)
     
     /// Parse a e164 number by trying to determine its matching country and match its rules

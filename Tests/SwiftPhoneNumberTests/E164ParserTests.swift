@@ -11,14 +11,14 @@ class E164ParserTests: XCTestCase {
     
     func test__parsing__numberIsInternational__itReturnSubscriberNumber() throws {
         let i18nNumber = "+288234567890"
-        let result = try PhoneNumber.parsing(i18nNumber, countries: [testCountry])
+        let result = try E164Parser.parsing(i18nNumber, countries: [testCountry])
         
         XCTAssertEqual(result.subscriberNumber, "234567890")
     }
     
     func test__parsing__numberIsNational__itReturnSubscriberNumber() throws {
         let nationalNumber = "2234567890"
-        let result = try PhoneNumber.parsing(nationalNumber, countries: [testCountry])
+        let result = try E164Parser.parsing(nationalNumber, countries: [testCountry])
         
         XCTAssertEqual(result.subscriberNumber, "234567890")
     }
@@ -29,7 +29,7 @@ class E164ParserTests: XCTestCase {
                                                         .init(type: .fixed, areaCodes: 6...7, length: 9)]
         )
         
-        let result = try PhoneNumber.parsing("+288234567890", countries: [countryWithSimilarI18nCode, testCountry])
+        let result = try E164Parser.parsing("+288234567890", countries: [countryWithSimilarI18nCode, testCountry])
         
         XCTAssertEqual(result.country, testCountry)
     }
