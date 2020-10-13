@@ -10,6 +10,9 @@ let package = Package(
         .library(
             name: "SwiftPhoneNumber",
             targets: ["SwiftPhoneNumber"]),
+        .library(
+            name: "SwiftPhoneNumber-UIKit",
+            targets: ["SwiftPhoneNumber-UIKit"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -21,8 +24,12 @@ let package = Package(
         .target(
             name: "SwiftPhoneNumber",
             dependencies: []),
+        .target(
+            name: "SwiftPhoneNumber-UIKit",
+            dependencies: ["SwiftPhoneNumber"],
+            path: "Sources/UIKit"),
         .testTarget(
             name: "SwiftPhoneNumberTests",
-            dependencies: ["SwiftPhoneNumber"]),
+            dependencies: ["SwiftPhoneNumber", "SwiftPhoneNumber-UIKit"]),
     ]
 )

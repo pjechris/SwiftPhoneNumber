@@ -1,11 +1,12 @@
 import XCTest
 import Foundation
 import UIKit
-@testable import SwiftPhoneNumber
+import SwiftPhoneNumber
+@testable import SwiftPhoneNumber_UIKit
 
-class TextInputFormatterTests: XCTestCase {
+class TextFieldFormatterTests: XCTestCase {
     var textField: UITextField!
-    var formatter: TextInputFormatter<FormatterStub>!
+    var formatter: TextFieldFormatter<FormatterStub>!
     
     override func setUp() {
         textField = UITextField()
@@ -64,7 +65,7 @@ class TextInputFormatterTests: XCTestCase {
     }
 }
 
-extension TextInputFormatterTests {
+extension TextFieldFormatterTests {
     struct FormatterStub: TextFormatter {
         typealias Value = Void
         

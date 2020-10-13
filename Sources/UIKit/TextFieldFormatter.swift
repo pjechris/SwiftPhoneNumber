@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SwiftPhoneNumber
 
 /// Provide formatting functionalities to `UITextField` typed text.
 public class TextFieldFormatter<Formatter: TextFormatter>: NSObject, UITextFieldDelegate {
