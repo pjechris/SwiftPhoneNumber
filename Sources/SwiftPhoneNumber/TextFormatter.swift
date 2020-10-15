@@ -9,7 +9,7 @@ public protocol TextFormatter {
     
     /// - Returns: formatted string of value
     /// - Parameter unformatted: unformatted text representation of value based on user input
-    static func formatted(unformatted: String, value: Value) -> String
+    static func formatted(unformatted: String, value: Result<Value, Error>) -> String
     
     /// - Returns: A strongly typed object associated to the unformatted value or an error if value can't be converted
     static func convert(unformatted: String) throws -> Value

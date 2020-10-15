@@ -17,10 +17,10 @@ class TextFieldFormatterTests: XCTestCase {
     func test__shouldChangeCharacters__addText__itFormatText() {
         let textToAdd = "02030405"
         
-        textField.text = "01"
-        formatter.textField(textField,
-                            shouldChangeCharactersIn: NSRange(location: textField.text!.count, length: 0),
-                            replacementString: textToAdd)
+        formatter.changeCharacters(textField: textField,
+                                   initialText: "01",
+                                   with: textToAdd,
+                                   range: NSRange(location: 2, length: 0))
         
         XCTAssertEqual(textField.text, "01 02 03 04 05")
     }
@@ -30,10 +30,10 @@ class TextFieldFormatterTests: XCTestCase {
         let text = "01020305"
         let insertionIndex = text.index(of: "3")! + 1
         
-        textField.text = text
-        formatter.textField(textField,
-                            shouldChangeCharactersIn: NSRange(location: insertionIndex, length: 0),
-                            replacementString: textToAddAfter03)
+        formatter.changeCharacters(textField: textField,
+                                   initialText: text,
+                                   with: textToAddAfter03,
+                                   range: NSRange(location: insertionIndex, length: 0))
         
         XCTAssertEqual(textField.text, "01 02 03 04 05")
     }
@@ -43,25 +43,33 @@ class TextFieldFormatterTests: XCTestCase {
         
         FormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
         
-        textField.text = "01"
-        formatter.textField(textField,
-                            shouldChangeCharactersIn: NSRange(location: textField.text!.count, length: 0),
-                            replacementString: textToAdd)
+        formatter.changeCharacters(textField: textField,
+                                   initialText: "01",
+                                   with: textToAdd,
+                                   range: NSRange(location: 2, length: 0))
         
         XCTAssertEqual(textField.text, "01 02 03")
     }
         
     func test__shouldChangeCharacters__deleteText__convertThrows__itDontFormatText() {
         let text = "01 02 03"
-        let deleteRange = NSRange(location: text.index(of: "2")!, length: 0)
+        let deleteRange = text.nsRange(of: "2")!
         
         FormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
         
-        textField.text = "01 02 03"
-        
-        formatter.textField(textField, shouldChangeCharactersIn: deleteRange, replacementString: "")
+        formatter.changeCharacters(textField: textField, initialText: text, with: "", range: deleteRange)
         
         XCTAssertEqual(textField.text, "01 0 03")
+    }
+}
+
+extension TextFieldFormatter {
+    func changeCharacters(textField: UITextField, initialText: String, with text: String, range: NSRange) {
+        textField.text = initialText
+        
+        if self.textField(textField, shouldChangeCharactersIn: range, replacementString: text) {
+            textField.text = initialText.replacingCharacters(in: Range(range, in: initialText)!, with: text)
+        }
     }
 }
 
@@ -75,7 +83,7 @@ extension TextFieldFormatterTests {
             text.replacingOccurrences(of: " ", with: "")
         }
         
-        static func formatted(unformatted: String, value: Void) -> String {
+        static func formatted(unformatted: String, value: Result<Void, Error>) -> String {
             unformatted.enumerated().reduce(into: "") { str, iterator in
                 str.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
                 str.append(String(iterator.element))
@@ -90,6 +98,10 @@ extension TextFieldFormatterTests {
 
 extension String {
     func index(of character: Character) -> Int? {
-        firstIndex(of: character).map { distance(from: startIndex, to: $0) }
+        firstIndex(of: character).map { distance(from: startIndex, to: $0) }
+    }
+    
+    func nsRange(of character: Character) -> NSRange? {
+        index(of: character).map { NSRange(location: $0, length: 1) }
     }
 }

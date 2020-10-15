@@ -30,7 +30,7 @@ struct SampleFormatter: TextFormatter {
         text.replacingOccurrences(of: " ", with: "")
     }
     
-    static func formatted(unformatted: String, value: Void) -> String {
+    static func formatted(unformatted: String, value: Result<Void, Error>) -> String {
         unformatted.enumerated().reduce(into: "") { str, iterator in
             str.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
             str.append(String(iterator.element))
