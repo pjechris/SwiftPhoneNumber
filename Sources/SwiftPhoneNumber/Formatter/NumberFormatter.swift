@@ -6,21 +6,21 @@ public struct NumberFormatter {
     /// into a specific manner
     public enum Rule {
         case internationalCode
-//        case prefixCode
+        //        case prefixCode
         case separator(String)
-        case subscriber(prefix: Int)
+        case subscriber(take: Int)
         case subscriber(groupedBy: Int, separator: String)
     }
     
-    private let rules: [Rule]
+    private let pattern: [Rule]
     
-    public init(_ rules: Rule...) {
-        self.rules = rules
+    public init(pattern: [Rule]) {
+        self.pattern = pattern
     }
     
     /// Apply set of rules to number data
     public func apply(to number: PhoneNumber) -> String {
-        rules.reduce(into: "") { result, rule in
+        pattern.reduce(into: "") { result, rule in
             switch rule {
             case .internationalCode:
                 result += "+" + number.country.internationalCode
@@ -37,7 +37,7 @@ private extension String {
     func grouped(by offset: Int, separator: String) -> String {
         enumerated().reduce(into: "") { result, iterator in
             let addSeparator = iterator.offset % offset == 0 && iterator.offset > 0
-
+            
             result += (addSeparator ? separator : "") + String(iterator.element)
         }
     }
