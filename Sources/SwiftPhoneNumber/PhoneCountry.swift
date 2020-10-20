@@ -19,7 +19,7 @@ public struct PhoneCountry: Equatable {
 
 public extension PhoneCountry {
     struct Destination: Hashable {
-        enum DestinationType {
+        public enum DestinationType {
             case fixed
             case mobile
         }
@@ -28,5 +28,11 @@ public extension PhoneCountry {
         let areaCodes: ClosedRange<Int>
         /// destination length (hence without international nor national prefix)
         let length: Int
+        
+        public init(type: DestinationType, areaCodes: ClosedRange<Int>, length: Int) {
+            self.type = type
+            self.areaCodes = areaCodes
+            self.length = length
+        }
     }
 }

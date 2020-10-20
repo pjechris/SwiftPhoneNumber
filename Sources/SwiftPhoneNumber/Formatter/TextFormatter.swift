@@ -1,6 +1,6 @@
 import Foundation
 
-/// Provide api to format <-> unformat text typed by user
+/// Format a text typed by user by using its representing `Value`
 public protocol TextFormatter {
     associatedtype Value
  
@@ -8,10 +8,10 @@ public protocol TextFormatter {
     static func unformatted(text: String) -> String
     
     /// - Returns: formatted string of value
-    /// - Parameter unformatted: unformatted text representation of value based on user input
+    /// - Parameter unformatted: unformatted text representation of value
     static func formatted(unformatted: String, value: Result<Value, Error>) -> String
     
-    /// - Returns: A strongly typed object associated to the unformatted value or an error if value can't be converted
+    /// - Returns: An object representing the unformatted text or an error if text can't be converted
     static func convert(unformatted: String) throws -> Value
 }
 
