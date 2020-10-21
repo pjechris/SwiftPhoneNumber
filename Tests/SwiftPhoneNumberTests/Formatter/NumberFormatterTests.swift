@@ -9,20 +9,34 @@ class NumberFormatterTests: XCTestCase {
                                    ])
     lazy var number = try! PhoneNumber(number: "+543223456789", in: [testCountry])
     
-    func test__apply__subscriberGroupedBy__itGroupSubscriber() {
-        let text = NumberFormatter(pattern: [.subscriber(groupedBy: 2, separator: "-")]).apply(to: number)
+    func test__string__subscriberGroupedBy__itGroupSubscriber() {
+        let text = NumberFormatter(pattern: [
+            .group(subscriberBy: 2, separator: "-")
+        ])
+        .string(from: number)
         
         XCTAssertEqual(text, "22-34-56-78-9")
     }
     
-    func test__apply__subscriberTake__itTakeIntoSubscriber() {
+    func test__string__subscriberMulitpleTimes__itOffsetSubscriberEachTime() {
         let text = NumberFormatter(pattern: [
-            .subscriber(take: 2),
+            .subscriber(2),
             .separator(","),
-            .subscriber(take: 3)
+            .subscriber(3)
         ])
-        .apply(to: number)
+        .string(from: number)
         
         XCTAssertEqual(text, "22,345")
+    }
+    
+    func test__string__internationalCodeTooManyTimes__itHasNoEffect() {
+        let text = NumberFormatter(pattern: [
+            .internationalCode,
+            .separator("/"),
+            .internationalCode
+        ])
+        .string(from: number)
+        
+        XCTAssertEqual(text, "+543/")
     }
 }
