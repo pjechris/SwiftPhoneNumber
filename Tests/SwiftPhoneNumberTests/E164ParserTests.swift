@@ -33,4 +33,18 @@ class E164ParserTests: XCTestCase {
         
         XCTAssertEqual(result.country, testCountry)
     }
+    
+    func test__parsing__noMatch__itThrow() throws {
+        XCTAssertThrowsError(
+            try E164Parser.parsing("007001002003", countries: [testCountry, testCountry]),
+            "") {
+            switch $0 {
+            case NumberParseError.noMatch:
+                break
+            default:
+                XCTFail("Expected NumberParseError.noMatch instead of \($0))")
+            }
+        }
+        
+    }
 }

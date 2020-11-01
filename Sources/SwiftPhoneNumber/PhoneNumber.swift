@@ -1,6 +1,6 @@
 import Foundation
 
-// https://en.wikipedia.org/wiki/E.164
+/// https://en.wikipedia.org/wiki/E.164
 /// https://www.itu.int/rec/T-REC-E.164-201011-I/en
 public struct PhoneNumber: Equatable {
     /// number associated country
@@ -22,18 +22,6 @@ public struct PhoneNumber: Equatable {
         self.subscriberNumber = subscriberNumber
         self.country = country
     }
-}
-
-public enum PhoneNumberError: Error {
-    case unsupported
-    case noMatchingCountry
-    case missingCountry
-    case invalidNationalCode
-    case invalidLength
-    // case invalidLength(country: PhoneCountry)
-    case invalidDestination
-    // case invalidDestination(country: PhoneCountry)
-    case invalidCharacter
 }
 
 

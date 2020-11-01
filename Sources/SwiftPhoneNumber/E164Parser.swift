@@ -1,5 +1,17 @@
 import Foundation
 
+/// Possible errors when parsing a `Number`
+public enum NumberParseError: Error {
+    /// number contains non valid characters (other than 0..9 or +)
+    case invalidCharacter
+    /// no country found matching provided number
+    case noMatch(in: [PhoneCountry])
+    /// number has matched but more than one country
+    case manyMatches(in: [PhoneCountry])
+    /// number has incorrect length for matched country
+    case incorrectLength(country: PhoneCountry)
+}
+
 enum E164Parser {
     typealias ParsedNumber = (subscriberNumber: String, country: PhoneCountry)
     
@@ -13,6 +25,7 @@ enum E164Parser {
         return try parsing(national: number, countries: countries)
     }
     
+    /// Parse a international number
     private static func parsing(international number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         let internationalCode = { (country: PhoneCountry) in
             number.starts(with: country.internationalCode)
@@ -38,6 +51,7 @@ enum E164Parser {
         })
     }
     
+    /// Parse a national number
     private static func parsing(national number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         let nationalCode = { (country: PhoneCountry) in
             country.nationalCode.map(number.hasPrefix) ?? false
@@ -63,26 +77,31 @@ enum E164Parser {
         })
     }
     
+    /// Validate number is coming from a country of `countries`
     private static func validate(_ number: String,
-                                 for countries: [PhoneCountry],
+                                 for allCountries: [PhoneCountry],
                                  conforming filters: (PhoneCountry) -> Bool...,
         reduce: (String, PhoneCountry) -> String) throws -> ParsedNumber {
         
         guard number.satisfy(.decimalDigits) else {
-            throw PhoneNumberError.invalidCharacter
+            throw NumberParseError.invalidCharacter
         }
         
-        let countries = countries.filter(by: filters)
+        let countries = allCountries.filter(by: filters)
         
-        guard let country = countries.first, countries.count == 1 else {
-            throw PhoneNumberError.noMatchingCountry
+        guard let country = countries.first else {
+            throw NumberParseError.noMatch(in: allCountries)
+        }
+        
+        guard countries.count == 1 else {
+            throw NumberParseError.manyMatches(in: countries)
         }
         
         let number = reduce(number, country)
         
         // FIXME use matching destination instead of first
         guard number.count == country.destinations.first!.length else {
-            throw PhoneNumberError.invalidLength
+            throw NumberParseError.incorrectLength(country: country)
         }
         
         return (subscriberNumber: number, country: country)
