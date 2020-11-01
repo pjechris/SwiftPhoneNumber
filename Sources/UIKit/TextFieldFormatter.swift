@@ -33,7 +33,9 @@ public class TextFieldFormatter<Formatter: InputFormatter>: NSObject, UITextFiel
             return true
         }
 
-        let formattedText = textFormatter.formatting(unformatted: text, value: value!) ?? text
+        guard let formattedText = textFormatter.formatting(unformatted: text, value: value!) else {
+            return true
+        }
 
         if formattedText != textField.text {
             textField.update(newText: formattedText,

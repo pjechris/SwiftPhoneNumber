@@ -12,33 +12,29 @@ import SwiftPhoneNumber_UIKit
 class ViewController: UIViewController {
     @IBOutlet var textField: UITextField!
     
-    var formatter = TextFieldFormatter<SampleFormatter>()
+    let country = PhoneCountry(code: "+33",
+                               nationalCode: "0",
+                               destinations: [
+                                .init(type: .fixed, areaCodes: 1...3, length: 9),
+                                .init(type: .mobile, areaCodes: 6...6, length: 9)
+                               ]
+    )
+    
+    let textFormatter = NumberFormatter(
+        international: [.internationalCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: " ")],
+        national: [.prefixCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: " ")]
+    )
+    
+    lazy var formatter = TextFieldFormatter<NumberInputFormatter>(
+        formatter: NumberInputFormatter(
+            countriesFormatter: [country: textFormatter]
+        )
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         textField.delegate = formatter
-    }
-}
-
-struct SampleFormatter: TextFormatter {
-    typealias Value = Void
-    
-    static var convertStubResult: Result<Void, Error> = .success(())
-    
-    static func unformatted(text: String) -> String {
-        text.replacingOccurrences(of: " ", with: "")
-    }
-    
-    static func formatted(unformatted: String, value: Result<Void, Error>) -> String {
-        unformatted.enumerated().reduce(into: "") { str, iterator in
-            str.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
-            str.append(String(iterator.element))
-        }
-    }
-    
-    static func convert(unformatted: String) throws -> Void {
-        try convertStubResult.get()
     }
 }
 
