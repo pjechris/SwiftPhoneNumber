@@ -12,7 +12,7 @@ public struct PhoneNumber: Equatable {
     /// full number respecting E.164 standard (including "+" sign)
     public var number: String { return "+" + country.internationalCode + subscriberNumber }
     
-    public init(number: String, in countries: [PhoneCountry]) throws {
+    public init(number: String, from countries: [PhoneCountry]) throws {
         let result = try E164Parser.parsing(number, countries: countries)
         
         self.init(subscriberNumber: result.subscriberNumber, country: result.country)

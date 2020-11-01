@@ -37,9 +37,9 @@ enum E164Parser {
             return country.destinations
                 .map(\.areaCodes)
                 .contains { areaCodes in
-                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))!
+                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))
                     
-                    return areaCodes.contains(areaCode)
+                    return areaCode.map(areaCodes.contains) ?? false
             }
         }
         

@@ -2,7 +2,7 @@ import Foundation
 
 /// Text formatter allowing to format a user input as `Number` using `InputFormatter`
 public struct NumberInputFormatter: InputFormatter {
-    public typealias Value = PhoneNumberInput
+    public typealias Value = PhoneNumber
     
     private let formatters: [PhoneCountry: NumberFormatter]
     private let countries: [PhoneCountry]
@@ -18,29 +18,20 @@ public struct NumberInputFormatter: InputFormatter {
         }
     }
     
-    public func convert(unformatted: String) throws -> PhoneNumberInput {
-        try PhoneNumberInput(number: unformatted, from: countries)
+    public func convert(unformatted: String) throws -> PhoneNumber {
+        try PhoneNumber(number: unformatted, from: countries)
     }
     
-    public func formatting(unformatted: String, value: Result<PhoneNumberInput, Error>) -> String? {
+    public func formatting(unformatted: String, value: Result<PhoneNumber, Error>) -> String? {
+        let format: NumberFormatter.Format = unformatted.hasPrefix("+") ? .international : .national
+        
         switch value {
+        case let .failure(NumberParseError.incorrectLength(country)):
+            return formatters[country]?.partial(string: unformatted, country: country, format: format)
         case .failure:
             return nil
-        case .success(let input):
-            return formatters[input.number.country]?.string(from: input.number, format: input.format)
-        }
-    }
-}
-
-extension NumberInputFormatter {
-    /// A `PhoneNumber` coming from a user input
-    public struct PhoneNumberInput {
-        let number: PhoneNumber
-        let format: NumberFormatter.Format
-        
-        init(number: String, from countries: [PhoneCountry]) throws {
-            self.number = try .init(number: number, in: countries)
-            self.format = number.hasPrefix("+") ? .international : .national
+        case .success(let number):
+            return formatters[number.country]?.string(from: number, format: format)
         }
     }
 }

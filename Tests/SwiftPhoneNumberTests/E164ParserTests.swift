@@ -34,6 +34,20 @@ class E164ParserTests: XCTestCase {
         XCTAssertEqual(result.country, testCountry)
     }
     
+    func test__parsing__numberIsPartial__withCountryAndDestination__itThrowInvalidLength() throws {
+        XCTAssertThrowsError(
+            try E164Parser.parsing("+2883", countries: [testCountry]),
+            "") {
+            switch $0 {
+            case NumberParseError.incorrectLength:
+                break
+            default:
+                XCTFail("Expected NumberParseError.incorrectLength instead of \($0))")
+            }
+        }
+        
+    }
+    
     func test__parsing__noMatch__itThrow() throws {
         XCTAssertThrowsError(
             try E164Parser.parsing("007001002003", countries: [testCountry, testCountry]),

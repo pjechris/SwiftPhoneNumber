@@ -1,5 +1,5 @@
 import XCTest
-import SwiftPhoneNumber
+@testable import SwiftPhoneNumber
 
 class NumberFormatterTests: XCTestCase {
     let testCountry = PhoneCountry(code: "543",
@@ -7,7 +7,7 @@ class NumberFormatterTests: XCTestCase {
                                    destinations: [
                                     .init(type: .fixed, areaCodes: 2...5, length: 9)
                                    ])
-    lazy var number = try! PhoneNumber(number: "+543223456789", in: [testCountry])
+    lazy var number = try! PhoneNumber(number: "+543223456789", from: [testCountry])
     
     func test__string__patternIsSubscriberGroupedBy__itGroupSubscriber() {
         let text = NumberFormatter(
@@ -37,5 +37,15 @@ class NumberFormatterTests: XCTestCase {
         .string(from: number, format: .international)
         
         XCTAssertEqual(text, "+543/")
+    }
+    
+    func test__partial__formatNational__stringIsInternational__itFormatCorrectly() {
+        let text = NumberFormatter(
+            international: [],
+            national: [.prefixCode, .separator(" "), .group(subscriberBy: 2, separator: "-")]
+        )
+        .partial(string: "+5432345", country: testCountry, format: .national)
+        
+        XCTAssertEqual(text, "6 23-45")
     }
 }

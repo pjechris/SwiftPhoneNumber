@@ -12,7 +12,7 @@ import SwiftPhoneNumber_UIKit
 class ViewController: UIViewController {
     @IBOutlet var textField: UITextField!
     
-    let country = PhoneCountry(code: "+33",
+    let country = PhoneCountry(code: "33",
                                nationalCode: "0",
                                destinations: [
                                 .init(type: .fixed, areaCodes: 1...3, length: 9),

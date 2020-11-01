@@ -30,15 +30,30 @@ public struct NumberFormatter {
         self.patterns = (international, national)
     }
         
-    /// Transform number into String for given format
+    /// Transform number into `String` for given format
     /// - Parameter number: the number to stringify
     /// - Parameter format: the number desired format
     public func string(from number: PhoneNumber, format: Format) -> String {
-        let pattern = self.pattern(for: format)
+        let subscriber = number.subscriberNumber
+        
+        return string(from: subscriber, country: number.country, format: format)
+    }
+    
+    /// Apply string formatting to a partial string number
+    func partial(string: String, country: PhoneCountry, format: Format) -> String {
+        let subscriber = string.hasPrefix("+")
+            ? string.dropFirst("+".count + country.internationalCode.count)
+            : string.dropFirst(country.nationalCode?.count ?? 0)
+        
+        return self.string(from: String(subscriber), country: country, format: format)
+    }
 
-        var subscriber = number.subscriberNumber
-        var internationalCode = number.country.internationalCode
-        var nationalCode = number.country.nationalCode ?? ""
+    private func string(from subscriber: String, country: PhoneCountry, format: Format) -> String {
+        let pattern = self.pattern(for: format)
+        
+        var subscriber = subscriber
+        var internationalCode = country.internationalCode
+        var nationalCode = country.nationalCode ?? ""
         
         return pattern.reduce(into: "") { result, rule in
             switch rule {

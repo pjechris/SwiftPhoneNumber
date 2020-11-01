@@ -34,10 +34,4 @@ class NumberInputFormatterTests: XCTestCase {
             "+336"
         )
     }
-    
-    func test_convert__inputIsNational__FormatIsNational() throws {
-        let formatter = NumberInputFormatter(countriesFormatter: [testCountry: numberFormatter])
-        
-        XCTAssertEqual(try formatter.convert(unformatted: "01234").format, .national)
-    }
 }
