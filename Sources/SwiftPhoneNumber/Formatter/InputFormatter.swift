@@ -4,14 +4,18 @@ import Foundation
 public protocol InputFormatter {
     associatedtype Value
  
+    /// Clean text from all unecessary characters
     /// - Returns: string with no formatting characters
-    func unformatted(text: String) -> String
+    func unformatting(text: String) -> String
     
-    /// - Returns: formatted string of value
-    /// - Parameter unformatted: unformatted text representation of value
-    func formatted(unformatted: String, value: Result<Value, Error>) -> String?
-    
+    /// Convert (unformatted) text into an associated object. Example: a IBAN, a PhoneNumber, a Date, ...
     /// - Returns: An object representing the unformatted text or an error if text can't be converted
     func convert(unformatted: String) throws -> Value
+    
+    /// Format text using its associated value or nil if no transform can be made
+    /// - Returns: formatted string of value or nil. If nil consumer should assume that the initial formatted text should
+    /// be used
+    /// - Parameter unformatted: unformatted text representation of value
+    func formatting(unformatted: String, value: Result<Value, Error>) -> String?
 }
 

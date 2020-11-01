@@ -23,7 +23,7 @@ public class TextFieldFormatter<Formatter: InputFormatter>: NSObject, UITextFiel
         let isDeleting = replacementText.isEmpty
         var text = textField.text ?? ""
         
-        text = textFormatter.unformatted(
+        text = textFormatter.unformatting(
             text: text.replacingCharacters(in: Range(range, in: text)!, with: replacementText)
         )
         
@@ -33,7 +33,7 @@ public class TextFieldFormatter<Formatter: InputFormatter>: NSObject, UITextFiel
             return true
         }
 
-        let formattedText = textFormatter.formatted(unformatted: text, value: value!) ?? text
+        let formattedText = textFormatter.formatting(unformatted: text, value: value!) ?? text
 
         if formattedText != textField.text {
             textField.update(newText: formattedText,

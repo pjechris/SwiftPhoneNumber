@@ -82,11 +82,11 @@ extension TextFieldFormatterTests {
         
         var convertStubResult: Result<Void, Error> = .success(())
         
-        func unformatted(text: String) -> String {
+        func unformatting(text: String) -> String {
             text.replacingOccurrences(of: " ", with: "")
         }
         
-        func formatted(unformatted: String, value: Result<Void, Error>) -> String? {
+        func formatting(unformatted: String, value: Result<Void, Error>) -> String? {
             unformatted.enumerated().reduce(into: "") { str, iterator in
                 str!.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
                 str!.append(String(iterator.element))

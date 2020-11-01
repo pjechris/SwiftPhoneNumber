@@ -16,15 +16,26 @@ public struct NumberFormatter {
         case group(subscriberBy: Int, separator: String)
     }
     
-    private let pattern: [Rule]
-    
-    /// - Parameter pattern: list of chained rules to create pattern
-    public init(pattern: [Rule]) {
-        self.pattern = pattern
+    /// Formats into which a `Number` can be rendered
+    public enum Format {
+        case international
+        case national
     }
     
-    /// Apply set of rules to number data
-    public func string(from number: PhoneNumber) -> String {
+    private let patterns: (international: [Rule], national: [Rule])
+    
+    /// - Parameter international: list of chained rules to create pattern in international format
+    /// - Parameter international: list of chained rules to create pattern in national format
+    public init(international: [Rule], national: [Rule]) {
+        self.patterns = (international, national)
+    }
+        
+    /// Transform number into String for given format
+    /// - Parameter number: the number to stringify
+    /// - Parameter format: the number desired format
+    public func string(from number: PhoneNumber, format: Format) -> String {
+        let pattern = self.pattern(for: format)
+
         var subscriber = number.subscriberNumber
         var internationalCode = number.country.internationalCode
         var nationalCode = number.country.nationalCode ?? ""
@@ -48,6 +59,15 @@ public struct NumberFormatter {
             default:
                 break
             }
+        }
+    }
+    
+    private func pattern(for format: Format) -> [Rule] {
+        switch format {
+        case .international:
+            return patterns.international
+        case .national:
+            return patterns.national
         }
     }
 }

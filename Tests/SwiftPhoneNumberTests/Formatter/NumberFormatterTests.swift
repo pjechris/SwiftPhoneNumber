@@ -9,33 +9,32 @@ class NumberFormatterTests: XCTestCase {
                                    ])
     lazy var number = try! PhoneNumber(number: "+543223456789", in: [testCountry])
     
-    func test__string__subscriberGroupedBy__itGroupSubscriber() {
-        let text = NumberFormatter(pattern: [
-            .group(subscriberBy: 2, separator: "-")
-        ])
-        .string(from: number)
+    func test__string__patternIsSubscriberGroupedBy__itGroupSubscriber() {
+        let text = NumberFormatter(
+            international: [.group(subscriberBy: 2, separator: "-")],
+            national: []
+        )
+        .string(from: number, format: .international)
         
         XCTAssertEqual(text, "22-34-56-78-9")
     }
     
-    func test__string__subscriberMulitpleTimes__itOffsetSubscriberEachTime() {
-        let text = NumberFormatter(pattern: [
-            .subscriber(2),
-            .separator(","),
-            .subscriber(3)
-        ])
-        .string(from: number)
+    func test__string__patternIsSubscriberMulitpleTimes__itOffsetSubscriberEachTime() {
+        let text = NumberFormatter(
+            international: [.subscriber(2), .separator(","), .subscriber(3)],
+            national: []
+        )
+        .string(from: number, format: .international)
         
         XCTAssertEqual(text, "22,345")
     }
     
-    func test__string__internationalCodeTooManyTimes__itHasNoEffect() {
-        let text = NumberFormatter(pattern: [
-            .internationalCode,
-            .separator("/"),
-            .internationalCode
-        ])
-        .string(from: number)
+    func test__string__patternUseInternationalCodeManyTimes__itHasNoEffect() {
+        let text = NumberFormatter(
+            international: [.internationalCode, .separator("/"), .internationalCode],
+            national: []
+        )
+        .string(from: number, format: .international)
         
         XCTAssertEqual(text, "+543/")
     }
