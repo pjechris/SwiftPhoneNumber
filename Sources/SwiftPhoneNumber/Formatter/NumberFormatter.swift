@@ -1,6 +1,6 @@
 import Foundation
 
-/// Help transforming a `PhoneNumber` into a `String` based on pattern rules
+/// Help formatting a `PhoneNumber` into a `String` based on pattern rules
 ///
 /// Example:
 ///

@@ -7,11 +7,14 @@ import SwiftPhoneNumber
 class TextFieldFormatterTests: XCTestCase {
     var textField: UITextField!
     var formatter: TextFieldFormatter<FormatterStub>!
+    var inputFormatterStub: FormatterStub!
     
     override func setUp() {
         textField = UITextField()
-        formatter = .init()
-        FormatterStub.convertStubResult = .success(())
+        inputFormatterStub = FormatterStub()
+        formatter = .init(formatter: inputFormatterStub)
+        
+        inputFormatterStub.convertStubResult = .success(())
     }
 
     func test__shouldChangeCharacters__addText__itFormatText() {
@@ -41,7 +44,7 @@ class TextFieldFormatterTests: XCTestCase {
     func test__shouldChangeCharacters__addText__convertThrows__itFormatText() {
         let textToAdd = "0203"
         
-        FormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
+        inputFormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
         
         formatter.changeCharacters(textField: textField,
                                    initialText: "01",
@@ -55,7 +58,7 @@ class TextFieldFormatterTests: XCTestCase {
         let text = "01 02 03"
         let deleteRange = text.nsRange(of: "2")!
         
-        FormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
+        inputFormatterStub.convertStubResult = .failure(NSError(domain: "", code: 0))
         
         formatter.changeCharacters(textField: textField, initialText: text, with: "", range: deleteRange)
         
@@ -74,23 +77,23 @@ extension TextFieldFormatter {
 }
 
 extension TextFieldFormatterTests {
-    struct FormatterStub: TextFormatter {
+    struct FormatterStub: InputFormatter {
         typealias Value = Void
         
-        static var convertStubResult: Result<Void, Error> = .success(())
+        var convertStubResult: Result<Void, Error> = .success(())
         
-        static func unformatted(text: String) -> String {
+        func unformatted(text: String) -> String {
             text.replacingOccurrences(of: " ", with: "")
         }
         
-        static func formatted(unformatted: String, value: Result<Void, Error>) -> String {
+        func formatted(unformatted: String, value: Result<Void, Error>) -> String? {
             unformatted.enumerated().reduce(into: "") { str, iterator in
-                str.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
-                str.append(String(iterator.element))
+                str!.append((iterator.offset % 2 == 0 && iterator.offset > 0 ? " " : ""))
+                str!.append(String(iterator.element))
             }
         }
         
-        static func convert(unformatted: String) throws -> Void {
+        func convert(unformatted: String) throws -> Void {
             try convertStubResult.get()
         }
     }

@@ -3,8 +3,13 @@ import UIKit
 import SwiftPhoneNumber
 
 /// Provide formatting functionalities to `UITextField` typed text.
-public class TextFieldFormatter<Formatter: TextFormatter>: NSObject, UITextFieldDelegate {
+public class TextFieldFormatter<Formatter: InputFormatter>: NSObject, UITextFieldDelegate {
     public private(set) var value: Result<Formatter.Value, Error>?
+    private let textFormatter: Formatter
+    
+    public init(formatter: Formatter) {
+        self.textFormatter = formatter
+    }
     
     /// Be careful: this method has side effects such as:
     /// - updating `value` attribute
@@ -18,17 +23,17 @@ public class TextFieldFormatter<Formatter: TextFormatter>: NSObject, UITextField
         let isDeleting = replacementText.isEmpty
         var text = textField.text ?? ""
         
-        text = Formatter.unformatted(
+        text = textFormatter.unformatted(
             text: text.replacingCharacters(in: Range(range, in: text)!, with: replacementText)
         )
         
-        value = Result { try Formatter.convert(unformatted: text) }
+        value = Result { try textFormatter.convert(unformatted: text) }
                 
         guard !isDeleting else {
             return true
         }
 
-        let formattedText = Formatter.formatted(unformatted: text, value: value!)
+        let formattedText = textFormatter.formatted(unformatted: text, value: value!) ?? text
 
         if formattedText != textField.text {
             textField.update(newText: formattedText,
