@@ -6,7 +6,7 @@ import Foundation
 ///
 /// `NumberFormatter([.internationalCode, .subscriber(1), .separator(" "), group(subscriberBy: 2, separator: " "])`
 /// would give "+331 02 03 04 05" with a french number
-public struct NumberFormatter {
+public struct PhoneNumberFormatter {
     /// Rules to define a pattern to display data from `PhoneNumber`
     public enum Rule {
         case internationalCode

@@ -7,13 +7,13 @@ class NumberInputFormatterTests: XCTestCase {
                                    destinations: [
                                     .init(type: .fixed, areaCodes: 1...4, length: 4)
                                    ])
-    let numberFormatter = NumberFormatter(
+    let numberFormatter = PhoneNumberFormatter(
         international: [],
         national: [.prefixCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: "-")]
     )
     
     func test__unformatting_itRemoveSeparators() {
-        let formatter = NumberInputFormatter(countriesFormatter: [:])
+        let formatter = PhoneNumberInputFormatter(countriesFormatter: [:])
         let separators = [" ", "-", "(", ")", "/"]
         
         separators.forEach {
@@ -27,7 +27,7 @@ class NumberInputFormatterTests: XCTestCase {
     }
     
     func test__unformatting_itPreserveInternationalSign() {
-        let formatter = NumberInputFormatter(countriesFormatter: [:])
+        let formatter = PhoneNumberInputFormatter(countriesFormatter: [:])
         
         XCTAssertEqual(
             formatter.unformatting(text: "+33 6"),

@@ -10,7 +10,7 @@ class NumberFormatterTests: XCTestCase {
     lazy var number = try! PhoneNumber(number: "+543223456789", from: [testCountry])
     
     func test__string__patternIsSubscriberGroupedBy__itGroupSubscriber() {
-        let text = NumberFormatter(
+        let text = PhoneNumberFormatter(
             international: [.group(subscriberBy: 2, separator: "-")],
             national: []
         )
@@ -20,7 +20,7 @@ class NumberFormatterTests: XCTestCase {
     }
     
     func test__string__patternIsSubscriberMulitpleTimes__itOffsetSubscriberEachTime() {
-        let text = NumberFormatter(
+        let text = PhoneNumberFormatter(
             international: [.subscriber(2), .separator(","), .subscriber(3)],
             national: []
         )
@@ -30,7 +30,7 @@ class NumberFormatterTests: XCTestCase {
     }
     
     func test__string__patternUseInternationalCodeManyTimes__itHasNoEffect() {
-        let text = NumberFormatter(
+        let text = PhoneNumberFormatter(
             international: [.internationalCode, .separator("/"), .internationalCode],
             national: []
         )
@@ -40,7 +40,7 @@ class NumberFormatterTests: XCTestCase {
     }
     
     func test__partial__formatNational__stringIsInternational__itFormatCorrectly() {
-        let text = NumberFormatter(
+        let text = PhoneNumberFormatter(
             international: [],
             national: [.prefixCode, .separator(" "), .group(subscriberBy: 2, separator: "-")]
         )

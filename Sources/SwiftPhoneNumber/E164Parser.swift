@@ -1,7 +1,7 @@
 import Foundation
 
 /// Possible errors when parsing a `Number`
-public enum NumberParseError: Error {
+public enum PhoneNumberParseError: Error {
     /// number contains non valid characters (other than 0..9 or +)
     case invalidCharacter
     /// no country found matching provided number
@@ -84,24 +84,24 @@ enum E164Parser {
         reduce: (String, PhoneCountry) -> String) throws -> ParsedNumber {
         
         guard number.satisfy(.decimalDigits) else {
-            throw NumberParseError.invalidCharacter
+            throw PhoneNumberParseError.invalidCharacter
         }
         
         let countries = allCountries.filter(by: filters)
         
         guard let country = countries.first else {
-            throw NumberParseError.noMatch(in: allCountries)
+            throw PhoneNumberParseError.noMatch(in: allCountries)
         }
         
         guard countries.count == 1 else {
-            throw NumberParseError.manyMatches(in: countries)
+            throw PhoneNumberParseError.manyMatches(in: countries)
         }
         
         let number = reduce(number, country)
         
         // FIXME use matching destination instead of first
         guard number.count == country.destinations.first!.length else {
-            throw NumberParseError.incorrectLength(country: country)
+            throw PhoneNumberParseError.incorrectLength(country: country)
         }
         
         return (subscriberNumber: number, country: country)

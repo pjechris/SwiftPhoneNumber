@@ -39,7 +39,7 @@ class E164ParserTests: XCTestCase {
             try E164Parser.parsing("+2883", countries: [testCountry]),
             "") {
             switch $0 {
-            case NumberParseError.incorrectLength:
+            case PhoneNumberParseError.incorrectLength:
                 break
             default:
                 XCTFail("Expected NumberParseError.incorrectLength instead of \($0))")
@@ -53,7 +53,7 @@ class E164ParserTests: XCTestCase {
             try E164Parser.parsing("007001002003", countries: [testCountry, testCountry]),
             "") {
             switch $0 {
-            case NumberParseError.noMatch:
+            case PhoneNumberParseError.noMatch:
                 break
             default:
                 XCTFail("Expected NumberParseError.noMatch instead of \($0))")

@@ -1,13 +1,13 @@
 import Foundation
 
 /// Text formatter allowing to format a user input as `Number` using `InputFormatter`
-public struct NumberInputFormatter: InputFormatter {
+public struct PhoneNumberInputFormatter: InputFormatter {
     public typealias Value = PhoneNumber
     
-    private let formatters: [PhoneCountry: NumberFormatter]
+    private let formatters: [PhoneCountry: PhoneNumberFormatter]
     private let countries: [PhoneCountry]
     
-    public init(countriesFormatter: [PhoneCountry: NumberFormatter]) {
+    public init(countriesFormatter: [PhoneCountry: PhoneNumberFormatter]) {
         self.formatters = countriesFormatter
         self.countries = Array(countriesFormatter.keys)
     }
@@ -23,10 +23,10 @@ public struct NumberInputFormatter: InputFormatter {
     }
     
     public func formatting(unformatted: String, value: Result<PhoneNumber, Error>) -> String? {
-        let format: NumberFormatter.Format = unformatted.hasPrefix("+") ? .international : .national
+        let format: PhoneNumberFormatter.Format = unformatted.hasPrefix("+") ? .international : .national
         
         switch value {
-        case let .failure(NumberParseError.incorrectLength(country)):
+        case let .failure(PhoneNumberParseError.incorrectLength(country)):
             return formatters[country]?.partial(string: unformatted, country: country, format: format)
         case .failure:
             return nil
