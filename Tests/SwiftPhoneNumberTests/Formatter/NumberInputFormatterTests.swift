@@ -9,7 +9,7 @@ class NumberInputFormatterTests: XCTestCase {
                                    ])
     let numberFormatter = PhoneNumberFormatter(
         international: [],
-        national: [.prefixCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: "-")]
+        national: "\(.code)\(1) \(2)-\(2)"
     )
     
     func test__unformatting_itRemoveSeparators() {

@@ -20,13 +20,10 @@ class ViewController: UIViewController {
                                ]
     )
     
-    let textFormatter = NumberFormatter(
-        international: [.internationalCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: " ")],
-        national: [.prefixCode, .subscriber(1), .separator(" "), .group(subscriberBy: 2, separator: " ")]
-    )
+    let textFormatter = PhoneNumberFormatter("\(.code)\(1) \(2) \(2) \(2) \(2)")
     
-    lazy var formatter = TextFieldFormatter<NumberInputFormatter>(
-        formatter: NumberInputFormatter(
+    lazy var formatter = TextFieldFormatter<PhoneNumberInputFormatter>(
+        formatter: PhoneNumberInputFormatter(
             countriesFormatter: [country: textFormatter]
         )
     )

@@ -11,7 +11,7 @@ class NumberFormatterTests: XCTestCase {
     
     func test__string__patternIsSubscriberGroupedBy__itGroupSubscriber() {
         let text = PhoneNumberFormatter(
-            international: [.group(subscriberBy: 2, separator: "-")],
+            international: [.subscriberGrouped(by: 2, separator: "-")],
             national: []
         )
         .string(from: number, format: .international)
@@ -21,7 +21,7 @@ class NumberFormatterTests: XCTestCase {
     
     func test__string__patternIsSubscriberMulitpleTimes__itOffsetSubscriberEachTime() {
         let text = PhoneNumberFormatter(
-            international: [.subscriber(2), .separator(","), .subscriber(3)],
+            international: "\(2),\(3)",
             national: []
         )
         .string(from: number, format: .international)
@@ -31,7 +31,7 @@ class NumberFormatterTests: XCTestCase {
     
     func test__string__patternUseInternationalCodeManyTimes__itHasNoEffect() {
         let text = PhoneNumberFormatter(
-            international: [.internationalCode, .separator("/"), .internationalCode],
+            international: "\(.code)/\(.code)",
             national: []
         )
         .string(from: number, format: .international)
@@ -42,10 +42,18 @@ class NumberFormatterTests: XCTestCase {
     func test__partial__formatNational__stringIsInternational__itFormatCorrectly() {
         let text = PhoneNumberFormatter(
             international: [],
-            national: [.prefixCode, .separator(" "), .group(subscriberBy: 2, separator: "-")]
+            national: "\(.code) \(2)-\(2)-\(2)-\(2)-\(1)"
         )
         .partial(string: "+5432345", country: testCountry, format: .national)
         
         XCTAssertEqual(text, "6 23-45")
+    }
+    
+    func test__partial__subscriberCountIsSupThanStringCount__itFormatString() {
+        let count = 5
+        let text = PhoneNumberFormatter([.subscriber(count)])
+            .partial(string: "+543\(String.init(repeating: "1", count: count - 1))", country: testCountry, format: .national)
+        
+        XCTAssertEqual(text, "1111")
     }
 }

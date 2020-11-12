@@ -4,16 +4,19 @@ import Foundation
 ///
 /// Example:
 ///
-/// `NumberFormatter([.internationalCode, .subscriber(1), .separator(" "), group(subscriberBy: 2, separator: " "])`
+/// `NumberFormatter(international: "\(.code)\(1) \(2) \(2) \(2) \(2)")`
 /// would give "+331 02 03 04 05" with a french number
 public struct PhoneNumberFormatter {
     /// Rules to define a pattern to display data from `PhoneNumber`
-    public enum Rule {
-        case internationalCode
-        case prefixCode
-        case separator(String)
+    public enum Rule: Equatable {
+        /// international or national code depending on selected `Format`
+        case code
+        /// add a literal string to formatter
+        case literal(String)
+        /// take at most Int argument from subscriber number
         case subscriber(Int)
-        case group(subscriberBy: Int, separator: String)
+        /// group subscriber number by packer of count using separator
+        case subscriberGrouped(by: Int, separator: String)
     }
     
     /// Formats into which a `Number` can be rendered
@@ -29,7 +32,12 @@ public struct PhoneNumberFormatter {
     public init(international: [Rule], national: [Rule]) {
         self.patterns = (international, national)
     }
-        
+    
+    /// Init formatter with same pattern for both internaional and national format
+    public init(_ pattern: [Rule]) {
+        self.init(international: pattern, national: pattern)
+    }
+    
     /// Transform number into `String` for given format
     /// - Parameter number: the number to stringify
     /// - Parameter format: the number desired format
@@ -47,42 +55,37 @@ public struct PhoneNumberFormatter {
         
         return self.string(from: String(subscriber), country: country, format: format)
     }
-
+    
     private func string(from subscriber: String, country: PhoneCountry, format: Format) -> String {
-        let pattern = self.pattern(for: format)
-        
+        let pattern: [Rule]
+        var code: String
         var subscriber = subscriber
-        var internationalCode = country.internationalCode
-        var nationalCode = country.nationalCode ?? ""
+        
+        switch format {
+        case .international:
+            pattern = patterns.international
+            code = "+" + country.internationalCode
+        case .national:
+            pattern = patterns.national
+            code = country.nationalCode ?? ""
+        }
         
         return pattern.reduce(into: "") { result, rule in
             switch rule {
-            case .internationalCode where !internationalCode.isEmpty:
-                result += "+" + internationalCode
-                internationalCode.removeAll()
-            case .prefixCode where !nationalCode.isEmpty:
-                result += nationalCode
-                nationalCode.removeAll()
-            case let .separator(separator):
+            case .code where !code.isEmpty:
+                result += code
+                code.removeAll()
+            case let .literal(separator) where !subscriber.isEmpty:
                 result += separator
             case let .subscriber(count) where !subscriber.isEmpty:
                 result += subscriber.prefix(count)
-                subscriber.removeFirst(count)
-            case let .group(count, separator) where !subscriber.isEmpty:
+                subscriber.removeFirst(min(count, subscriber.count))
+            case let .subscriberGrouped(count, separator) where !subscriber.isEmpty:
                 result += subscriber.grouped(by: count, separator: separator)
                 subscriber.removeAll()
             default:
                 break
             }
-        }
-    }
-    
-    private func pattern(for format: Format) -> [Rule] {
-        switch format {
-        case .international:
-            return patterns.international
-        case .national:
-            return patterns.national
         }
     }
 }
