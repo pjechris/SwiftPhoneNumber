@@ -24,15 +24,40 @@ public extension PhoneCountry {
             case mobile
         }
         
-        let type: DestinationType
-        let areaCodes: ClosedRange<Int>
+        let name: String?
+        let type: DestinationType?
+        let areaCodes: AnyCollection<Int>
         /// destination length (hence without international nor national prefix)
         let length: Int
         
-        public init(type: DestinationType, areaCodes: ClosedRange<Int>, length: Int) {
+        public init(name: String? = nil, type: DestinationType? = nil, areaCodes: ClosedRange<Int>, length: Int) {
+            self.init(name: name, type: type, areaCodes: AnyCollection(areaCodes), length: length)
+        }
+        
+        public init(name: String? = nil, type: DestinationType? = nil, areaCodes: Int..., length: Int) {
+            self.init(name: name, type: type, areaCodes: AnyCollection(areaCodes), length: length)
+        }
+        
+        init(name: String?, type: DestinationType?, areaCodes: AnyCollection<Int>, length: Int) {
+            self.name = name
             self.type = type
             self.areaCodes = areaCodes
             self.length = length
+        }
+        
+        public static func == (lhs: PhoneCountry.Destination, rhs: PhoneCountry.Destination) -> Bool {
+            lhs.name == rhs.name
+                && lhs.type == rhs.type
+                && lhs.length == rhs.length
+                && lhs.areaCodes.count == rhs.areaCodes.count
+                && lhs.areaCodes.allSatisfy(rhs.areaCodes.contains)
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(name)
+            hasher.combine(type)
+            hasher.combine(length)
+            hasher.combine(Array(areaCodes))
         }
     }
 }

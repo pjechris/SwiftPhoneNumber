@@ -6,7 +6,7 @@ import SwiftPhoneNumber
 
 class TextFieldFormatterTests: XCTestCase {
     var textField: UITextField!
-    var formatter: TextFieldFormatter<FormatterStub>!
+    var formatter: TextFieldFormatterDelegate<FormatterStub>!
     var inputFormatterStub: FormatterStub!
     
     override func setUp() {
@@ -66,7 +66,7 @@ class TextFieldFormatterTests: XCTestCase {
     }
 }
 
-extension TextFieldFormatter {
+extension TextFieldFormatterDelegate {
     func changeCharacters(textField: UITextField, initialText: String, with text: String, range: NSRange) {
         textField.text = initialText
         

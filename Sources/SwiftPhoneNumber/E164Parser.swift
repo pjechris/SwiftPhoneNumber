@@ -37,7 +37,8 @@ enum E164Parser {
             return country.destinations
                 .map(\.areaCodes)
                 .contains { areaCodes in
-                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))
+                    // reverse to get last item of Collection (and we know we have at least one because Destination force it)
+                    let areaCode = Int(number.prefix(areaCodes.reversed().first!.digitsCount))
                     
                     return areaCode.map(areaCodes.contains) ?? false
             }
@@ -63,7 +64,8 @@ enum E164Parser {
             return country.destinations
                 .map(\.areaCodes)
                 .contains { areaCodes in
-                    let areaCode = Int(number.prefix(areaCodes.upperBound.digitsCount))
+                    // reverse to get last item of Collection (and we know we have at least one because Destination force it)
+                    let areaCode = Int(number.prefix(areaCodes.reversed().first!.digitsCount))
                     
                     return areaCode.map(areaCodes.contains) ?? false
             }

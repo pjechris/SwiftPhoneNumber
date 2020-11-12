@@ -7,7 +7,7 @@ public struct PhoneNumberInputFormatter: InputFormatter {
     private let formatters: [PhoneCountry: PhoneNumberFormatter]
     private let countries: [PhoneCountry]
     
-    public init(countriesFormatter: [PhoneCountry: PhoneNumberFormatter]) {
+    public init(countriesFormatter: [PhoneCountry: PhoneNumberFormatter] = .default) {
         self.formatters = countriesFormatter
         self.countries = Array(countriesFormatter.keys)
     }

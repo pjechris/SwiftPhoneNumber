@@ -2,8 +2,15 @@ import Foundation
 import UIKit
 import SwiftPhoneNumber
 
+/// "typealias" to a `TextFieldFormatterDelegate` formatter using a `PhoneNumberInputFormatter`
+public class TextFieldPhoneNumberDelegate: TextFieldFormatterDelegate<PhoneNumberInputFormatter> {
+    convenience public init() {
+        self.init(formatter: PhoneNumberInputFormatter())
+    }
+}
+
 /// Provide formatting functionalities to `UITextField` typed text.
-public class TextFieldFormatter<Formatter: InputFormatter>: NSObject, UITextFieldDelegate {
+public class TextFieldFormatterDelegate<Formatter: InputFormatter>: NSObject, UITextFieldDelegate {
     public private(set) var value: Result<Formatter.Value, Error>?
     private let textFormatter: Formatter
     
