@@ -12,7 +12,7 @@ import SwiftPhoneNumber_UIKit
 class ViewController: UIViewController {
     @IBOutlet var textField: UITextField!
     
-    let delegate = TextFieldPhoneNumberDelegate(formatter: .init())
+    let delegate = TextFieldPhoneNumberDelegate()
 
     override func viewDidLoad() {
         super.viewDidLoad()

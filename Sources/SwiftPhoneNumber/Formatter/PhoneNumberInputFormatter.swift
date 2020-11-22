@@ -13,8 +13,10 @@ public struct PhoneNumberInputFormatter: InputFormatter {
     }
     
     public func unformatting(text: String) -> String {
-        text.filter {
-            [" ", "-", "(", ")", "/"].contains(String($0)) == false
+        let validCharacters = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: "+"))
+        
+        return text.filter {
+            $0.unicodeScalars.allSatisfy(validCharacters.contains)
         }
     }
     
@@ -29,7 +31,7 @@ public struct PhoneNumberInputFormatter: InputFormatter {
         case let .failure(PhoneNumberParseError.incorrectLength(country)):
             return formatters[country]?.partial(string: unformatted, country: country, format: format)
         case .failure:
-            return nil
+            return unformatted
         case .success(let number):
             return formatters[number.country]?.string(from: number, format: format)
         }

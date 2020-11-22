@@ -72,7 +72,7 @@ public struct PhoneNumberFormatter {
         
         return pattern.reduce(into: "") { result, rule in
             switch rule {
-            case .code where !code.isEmpty:
+            case .code:
                 result += code
                 code.removeAll()
             case let .literal(separator) where !subscriber.isEmpty:
