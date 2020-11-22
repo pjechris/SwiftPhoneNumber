@@ -5,7 +5,7 @@ public enum PhoneNumberParseError: Error {
     /// number contains non valid characters (other than 0..9 or +)
     case invalidCharacter
     /// no country found matching provided number
-    case noMatch(in: [PhoneCountry])
+    case noCountryMatch
     /// number has matched but more than one country
     case manyMatches(in: [PhoneCountry])
     /// number has incorrect length for matched country
@@ -37,8 +37,8 @@ enum E164Parser {
             return country.destinations
                 .map(\.areaCodes)
                 .contains { areaCodes in
-                    // reverse to get last item of Collection (and we know we have at least one because Destination force it)
-                    let areaCode = Int(number.prefix(areaCodes.reversed().first!.digitsCount))
+                    // we know we have at least one because Destination force it
+                    let areaCode = Int(number.prefix(areaCodes.first!.digitsCount))
                     
                     return areaCode.map(areaCodes.contains) ?? false
             }
@@ -55,17 +55,17 @@ enum E164Parser {
     /// Parse a national number
     private static func parsing(national number: String, countries: [PhoneCountry]) throws -> ParsedNumber {
         let nationalCode = { (country: PhoneCountry) in
-            country.nationalCode.map(number.hasPrefix) ?? false
+            country.nationalCode.map(number.hasPrefix) ?? true
         }
         
         let areaCode = { (country: PhoneCountry) -> Bool in
-            let number = String(number.dropFirst(country.nationalCode!.count))
+            let number = String(number.dropFirst(country.nationalCode?.count ?? 0))
             
             return country.destinations
                 .map(\.areaCodes)
                 .contains { areaCodes in
-                    // reverse to get last item of Collection (and we know we have at least one because Destination force it)
-                    let areaCode = Int(number.prefix(areaCodes.reversed().first!.digitsCount))
+                    // we know we have at least one because Destination force it
+                    let areaCode = Int(number.prefix(areaCodes.first!.digitsCount))
                     
                     return areaCode.map(areaCodes.contains) ?? false
             }
@@ -75,7 +75,7 @@ enum E164Parser {
                             for: countries,
                             conforming: nationalCode, areaCode,
                             reduce: { number, country in
-                                String(number.dropFirst(country.nationalCode!.count))
+                                String(number.dropFirst(country.nationalCode?.count ?? 0))
         })
     }
     
@@ -90,23 +90,23 @@ enum E164Parser {
         }
         
         let countries = allCountries.filter(by: filters)
+        let results = countries
+            .map { (subscriberNumber: reduce(number, $0), country: $0) }
+            .filter { $0.subscriberNumber.count == $0.country.destinations.first!.length }
         
-        guard let country = countries.first else {
-            throw PhoneNumberParseError.noMatch(in: allCountries)
-        }
-        
-        guard countries.count == 1 else {
-            throw PhoneNumberParseError.manyMatches(in: countries)
-        }
-        
-        let number = reduce(number, country)
-        
-        // FIXME use matching destination instead of first
-        guard number.count == country.destinations.first!.length else {
+        guard let result = results.first else {
+            guard let country = countries.first, countries.count == 1 else {
+                throw PhoneNumberParseError.noCountryMatch
+            }
+            
             throw PhoneNumberParseError.incorrectLength(country: country)
         }
         
-        return (subscriberNumber: number, country: country)
+        guard results.count == 1 else {
+            throw PhoneNumberParseError.manyMatches(in: countries)
+        }
+        
+        return result
     }
 }
 
