@@ -7,7 +7,7 @@ public struct PhoneCountry: Hashable {
     public let internationalCode: String
     /// national prefix to dial when calling from the country. For example: "0" for metropolitan France
     public let nationalCode: String?
-    
+    /// reachable numbers from this country
     public let destinations: Set<Destination>
 
     public init(code: String, nationalCode: String? = nil, destinations: Set<Destination>) {
@@ -24,16 +24,24 @@ public extension PhoneCountry {
             case mobile
         }
         
+        /// A name for this destination. "Alaska" or "California" for instance
         let name: String?
         let type: DestinationType?
+        /// Geographic codes associated to this destination
         let areaCodes: AnyCollection<Int>
-        /// destination length (hence without international nor national prefix)
+        /// destination subscriber number length
+        /// (hence without international nor national prefix but with areCode included).
+        /// For instance USA destination length is 10
         let length: Int
         
+        /// Create a Destination with a range as area codes.
+        /// For example `areaCodes: 100...200` will consider all values from 100 to 200 as being into the destination
         public init(name: String? = nil, type: DestinationType? = nil, areaCodes: ClosedRange<Int>, length: Int) {
             self.init(name: name, type: type, areaCodes: AnyCollection(areaCodes), length: length)
         }
         
+        /// Create a Destination with a variadic array of areaCodes
+        /// For example `areaCodes: 100, 150, 200` will only consider value 100, 150, 200 as being into the destination
         public init(name: String? = nil, type: DestinationType? = nil, areaCodes: Int..., length: Int) {
             self.init(name: name, type: type, areaCodes: AnyCollection(areaCodes), length: length)
         }

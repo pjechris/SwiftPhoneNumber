@@ -19,3 +19,7 @@ public extension Dictionary where Key == PhoneCountry, Value == PhoneNumberForma
         .usa: .usa
     ]
 }
+
+public extension Array where Element == PhoneCountry {
+    static let `default`: Self = Array(Dictionary<PhoneCountry, PhoneNumberFormatter>.default.keys)
+}
