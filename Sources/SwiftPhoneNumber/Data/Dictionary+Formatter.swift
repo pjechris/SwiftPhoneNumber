@@ -11,12 +11,31 @@ public extension Dictionary where Key == PhoneCountry, Value == PhoneNumberForma
         .reu: .fra,
         .wlf: .fra,
         
-        .asm: .usa,
-        .gum: .usa,
-        .mnp: .usa,
-        .pri: .usa,
-        .vir: .usa,
-        .usa: .usa
+        .asm: .nanp,
+        .gum: .nanp,
+        .mnp: .nanp,
+        .pri: .nanp,
+        .vir: .nanp,
+        .usa: .nanp,
+        .can: .nanp,
+        .aia: .nanp,
+        .atg: .nanp,
+        .bhs: .nanp,
+        .bmu: .nanp,
+        .brb: .nanp,
+        .cym: .nanp,
+        .dma: .nanp,
+        .dom: .nanp,
+        .grd: .nanp,
+        .jam: .nanp,
+        .kna: .nanp,
+        .lca: .nanp,
+        .maf: .nanp,
+        .msr: .nanp,
+        .tca: .nanp,
+        .tto: .nanp,
+        .vct: .nanp,
+        .vgb: .nanp
     ]
 }
 

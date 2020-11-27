@@ -80,8 +80,3 @@ public extension PhoneCountry {
     /// Virgin Islands
     static let vir = Self(code: "1", destinations: [.init(areaCodes: 340, length: 10)])
 }
-
-extension PhoneNumberFormatter {
-    static let usa = PhoneNumberFormatter(international: "\(.code)-\(3)-\(3)-\(4)",
-                                          national: "(\(3)) \(3)-\(4)")
-}

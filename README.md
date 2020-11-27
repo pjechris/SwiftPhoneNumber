@@ -76,19 +76,12 @@ SwiftPhoneNumber should be able to run on any platform where Swift. That being s
 
 ## Supported countries
 
-SwiftPhoneNumber countries support is still incomplete:
-
-| Country       | Added version  |
-|------------|-------------------|
-| France (+DOM-TOM)        | 0.1|
-| USA + (Commonwealth)           | 0.1|
-
-It is a goal to have as much countries supported as possible. Feel free to add support for one (see Customization section on how to do it).
+See [Countries](Countries.md)
 
 ## Customization
 
 ### PhoneCountry
-You can easily add a Country to SwiftPhoneNumber (or even maybe for your own need): 
+You can easily add a Country to SwiftPhoneNumber (or even maybe for your own need):
 
 - Add a file into `Data/Country` folder
 - Create an extension on `PhoneCountry`, and add a `static let`  country instance. See the class documentation for more information
@@ -108,7 +101,7 @@ With a french number "0102030405" it would give "01 02 03 04 05". While working 
 ```swift
 // Available interpolations are:
 // - .code to international/nationalcode
-// - a Int number that will take Int characters from subscriber number 
+// - a Int number that will take Int characters from subscriber number
 let franceFormatter = PhoneNumberFormatter("\(.code)\(1) \(2) \(2) \(2) \(2)")
 ```
 
