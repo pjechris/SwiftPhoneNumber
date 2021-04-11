@@ -1,6 +1,14 @@
 # SwiftPhoneNumber
 
-A simple library to handle phone numbers! Compatible with all platforms where Swift run (see Compatibility section for more information)
+![SPM](https://img.shields.io/static/v1?label=Swift%20PM&message=%E2%9C%93&color=24C28A&labelColor=444444)
+[![Twitter Follow](https://img.shields.io/twitter/follow/pjechris.svg?label=Follow%20me)](https://twitter.com/pjechris)
+[![Donate using Liberapay](https://img.shields.io/liberapay/patrons/pjechris.svg?logo=liberapay)](https://liberapay.com/pjechris/donate)
+
+A simple domain-oriented library to handle phone numbers! Compatible with all platforms where Swift run (see Compatibility section for more information).
+
+Goal of the library is to be as simple to use as possible AND easy to add new functionalities such as Countries.
+
+*Contribution to complete missing countries is appreciated.*
 
 ## Usage
 
@@ -9,9 +17,9 @@ SwiftPhoneNumber allow you to build **only valid** numbers:
 import SwiftPhoneNumber
 
 do {
-    let phoneNumber = try PhoneNumber(number: "0102030405")
+    let phoneNumber = try PhoneNumber(number: "+33102030405")
     // OR
-    let phoneNumber = try PhoneNumber(number: "0102030405", from: [.fra, .usa, ...])
+    let phoneNumber = try PhoneNumber(number: "+33102030405", for: [.fra, .usa, ...])
 }
 catch {
 
@@ -19,7 +27,7 @@ catch {
 ```
 Once you have it, do whatever you want with it.
 
-SwiftPhoneNumber can also provide a formatter for `UITextField`:
+SwiftPhoneNumber also provide a formatter for `UITextField`:
 
 ```swift
 import SwiftPhoneNumber
@@ -78,25 +86,22 @@ SwiftPhoneNumber should be able to run on any platform where Swift. That being s
 
 See [Countries](Countries.md)
 
-## Customization
+## Participing
 
-### PhoneCountry
-You can easily add a Country to SwiftPhoneNumber (or even maybe for your own need):
+### New country
+To add a new country:
 
-- Add a file into `Data/Country` folder
-- Create an extension on `PhoneCountry`, and add a `static let`  country instance. See the class documentation for more information
-- Create an extension `PhoneNumberFormatter` add a new formatter for the new country.
-- Add  country: formatter relationship in `Data/Dictionary+Formatter`
-- And... that's it!
+- Add it to `Country.swift`. You'll have to provide info such name, flag emoji, iso codes.
+- Define phone metadata and a formatter (or reuse one existing)
+- Add those new data into `Country+Data`
 
 ### PhoneNumberFormatter
 
-`PhoneNumberFormatter` is used to format a `PhoneCountry`. To create your own, you just have to make a new instance and pass 2 formats: one for international formatting and one for national formatting. If both are the same you can just pass one argument.
+`PhoneNumberFormatter` is used to format a country. To create your own, you just have to make a new instance and pass 2 format style:
+- one for international formatting
+- one for national formatting.
 
-```swift
-let franceFormatter = PhoneNumberFormatter([.code, .subscriber(1), .literal(" "), .subscriberGrouped(by: 2, separator: " ")])
-```
-With a french number "0102030405" it would give "01 02 03 04 05". While working writing a formatter this way is kind of long and hard to read so you can also use `StringInterpolation` to get the same job done:
+If both are the same you can just pass one argument.
 
 ```swift
 // Available interpolations are:
@@ -105,11 +110,13 @@ With a french number "0102030405" it would give "01 02 03 04 05". While working 
 let franceFormatter = PhoneNumberFormatter("\(.code)\(1) \(2) \(2) \(2) \(2)")
 ```
 
+With a french number "0102030405" it would give "01 02 03 04 05"
+
 ### TextFieldPhoneNumberDelegate
 
 Something is wrong with our `TextFieldPhoneNumberDelegate`? Or maybe you want something more? Under the hood `TextFieldPhoneNumberDelegate` is just a `TextFieldFormatterDelegate` with a `InputFormatter` to define formatting rules:
 
-- How to clean the use input
+- How to clean the user input
 - How to convert it into a `PhoneNumber`
 - How to format the result (delegated to `PhoneNumberFormatter`)
 
