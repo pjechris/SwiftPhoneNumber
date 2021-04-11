@@ -10,6 +10,12 @@ public struct PhoneCountry: Hashable {
     /// reachable numbers from this country
     public let destinations: Set<Destination>
 
+    /// A priority value to disambiguate between multiple matching Destination
+    /// The bigger the more prioritized it is
+    var priority: Int {
+        destinations.first?.areaCodes.first?.digitsCount ?? 0
+    }
+
     public init(code: String, nationalCode: String? = nil, destinations: Set<Destination>) {
         self.internationalCode = code
         self.nationalCode = nationalCode

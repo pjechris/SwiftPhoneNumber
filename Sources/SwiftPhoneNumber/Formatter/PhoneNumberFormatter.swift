@@ -20,7 +20,7 @@ public struct PhoneNumberFormatter {
     }
     
     /// Formats into which a `Number` can be rendered
-    public enum Format {
+    public enum FormattingStyle {
         case international
         case national
     }
@@ -40,34 +40,36 @@ public struct PhoneNumberFormatter {
     
     /// Transform number into `String` for given format
     /// - Parameter number: the number to stringify
-    /// - Parameter format: the number desired format
-    public func string(from number: PhoneNumber, format: Format) -> String {
+    /// - Parameter style: the number desired string style
+    /// - Parameter metadata: phone metadata to use to generate the string. If nil default number metadata will be used
+    public func string(from number: PhoneNumber, style: FormattingStyle, metadata: PhoneCountry? = nil) -> String {
         let subscriber = number.subscriberNumber
+        let metadata = metadata ?? number.country.phone.metadata
         
-        return string(from: subscriber, country: number.country, format: format)
+        return string(from: subscriber, metadata: metadata, style: style)
     }
     
     /// Apply string formatting to a partial string number
-    func partial(string: String, country: PhoneCountry, format: Format) -> String {
+    func partial(string: String, style: FormattingStyle, metadata: PhoneCountry) -> String {
         let subscriber = string.hasPrefix("+")
-            ? string.dropFirst("+".count + country.internationalCode.count)
-            : string.dropFirst(country.nationalCode?.count ?? 0)
+            ? string.dropFirst("+".count + metadata.internationalCode.count)
+            : string.dropFirst(metadata.nationalCode?.count ?? 0)
         
-        return self.string(from: String(subscriber), country: country, format: format)
+        return self.string(from: String(subscriber), metadata: metadata, style: style)
     }
     
-    private func string(from subscriber: String, country: PhoneCountry, format: Format) -> String {
+    private func string(from subscriber: String, metadata: PhoneCountry, style: FormattingStyle) -> String {
         let pattern: [Rule]
         var code: String
         var subscriber = subscriber
         
-        switch format {
+        switch style {
         case .international:
             pattern = patterns.international
-            code = "+" + country.internationalCode
+            code = "+" + metadata.internationalCode
         case .national:
             pattern = patterns.national
-            code = country.nationalCode ?? ""
+            code = metadata.nationalCode ?? ""
         }
         
         return pattern.reduce(into: "") { result, rule in

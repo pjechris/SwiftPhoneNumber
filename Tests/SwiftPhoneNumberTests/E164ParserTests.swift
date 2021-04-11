@@ -3,55 +3,45 @@ import XCTest
 @testable import SwiftPhoneNumber
 
 class E164ParserTests: XCTestCase {
-    let testCountry = PhoneCountry(code: "288",
-                                   nationalCode: "2",
-                                   destinations: [
-                                    .init(type: .fixed, areaCodes: 2...5, length: 9)
-    ])
-    
     func test__parsing__internationalNumber__itReturnSubscriberNumber() throws {
-        let i18nNumber = "+288234567890"
-        let result = try E164Parser.parsing(i18nNumber, countries: [testCountry])
+        let frNumber = "+33102030405"
+        let result = try E164Parser.parsing(frNumber, countries: [.france])
         
-        XCTAssertEqual(result.subscriberNumber, "234567890")
+        XCTAssertEqual(result.subscriberNumber, "102030405")
     }
     
     func test__parsing__internationalNumber__matchMultipleCountriesCode__ItReturnCountryMatchingAreaCode() throws {
-        let countryWithSimilarI18nCode = PhoneCountry(code: testCountry.internationalCode,
-                                                      destinations: [
-                                                        .init(type: .fixed, areaCodes: 6...7, length: 9)]
-        )
+        let usaArizonaNumber = "+14804567890"
+        let result = try E164Parser.parsing(usaArizonaNumber, countries: [.canada, .unitedStates])
         
-        let result = try E164Parser.parsing("+288234567890", countries: [countryWithSimilarI18nCode, testCountry])
-        
-        XCTAssertEqual(result.country, testCountry)
+        XCTAssertEqual(result.country, .unitedStates)
     }
     
-    func test__parsing__nationalNumber__itReturnSubscriberNumber() throws {
-        let nationalNumber = "2234567890"
-        let result = try E164Parser.parsing(nationalNumber, countries: [testCountry])
+    func test__parsing__nationalNumber__withNationalCode__itReturnSubscriberNumber() throws {
+        let nationalNumber = "0102030405"
+        let result = try E164Parser.parsing(nationalNumber, countries: [.france])
         
-        XCTAssertEqual(result.subscriberNumber, "234567890")
+        XCTAssertEqual(result.subscriberNumber, "102030405")
     }
     
-    func test__parsing__nationalNumber__withNoNationalPrefix__itReturnCountry() throws {
-        let noPrefixCountry = PhoneCountry(code: "288", destinations: [.init(areaCodes: 300, length: 6)])
-        let result = try E164Parser.parsing("300301", countries: [testCountry, noPrefixCountry])
+    func test__parsing__nationalNumber__withNoNationalCode__itReturnCountry() throws {
+        let bermudaNumber = "4414567890"
+        let result = try E164Parser.parsing(bermudaNumber, countries: [.bermuda])
         
-        XCTAssertEqual(result.country, noPrefixCountry)
+        XCTAssertEqual(result.country, .bermuda)
     }
     
-    func test__parsing__nationalNumber__matchMultipleCountries__differentLength__itReturnCountryMatchingLength() throws {
-        let firstCountry = PhoneCountry(code: "11", destinations: [.init(areaCodes: 2, length: 6)])
-        let matchingCountry = PhoneCountry(code: "22", destinations: [.init(areaCodes: 200, length: 10)])
-        let result = try E164Parser.parsing("2004567890", countries: [firstCountry, matchingCountry])
+    func test__parsing__nationalNumber__areaCodeIsOverlapping__differentLength__itReturnBiggestAreaCode() throws {
+        // overlap on 0690 (guadeloupe) and 06 (france)
+        let guadeloupeNumber = "0690456789"
+        let result = try E164Parser.parsing(guadeloupeNumber, countries: [.france, .guadeloupe])
         
-        XCTAssertEqual(result.country, matchingCountry)
+        XCTAssertEqual(result.country, .guadeloupe)
     }
     
     func test__parsing__partialNumber__containCountryAndDestination__itThrowInvalidLength() throws {
         XCTAssertThrowsError(
-            try E164Parser.parsing("+2883", countries: [testCountry]),
+            try E164Parser.parsing("+336", countries: [.france]),
             "") {
             switch $0 {
             case PhoneNumberParseError.incorrectLength:
@@ -65,7 +55,7 @@ class E164ParserTests: XCTestCase {
     
     func test__parsing__noMatch__itThrow() throws {
         XCTAssertThrowsError(
-            try E164Parser.parsing("007001002003", countries: [testCountry, testCountry]),
+            try E164Parser.parsing("00723456789", countries: [.france]),
             "") {
             switch $0 {
             case PhoneNumberParseError.noCountryMatch:

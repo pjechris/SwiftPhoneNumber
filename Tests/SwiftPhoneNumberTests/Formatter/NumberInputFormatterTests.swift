@@ -9,7 +9,7 @@ class NumberInputFormatterTests: XCTestCase {
                                    ])
     
     func test__unformatting_itRemoveUnauthorizedCharacters() {
-        let formatter = PhoneNumberInputFormatter(countriesFormatter: [:])
+        let formatter = PhoneNumberInputFormatter(countries: [])
         
         XCTAssertEqual(formatter.unformatting(text: "+01 02/03-04(05)ABCD"), "+0102030405")
     }
