@@ -2,7 +2,6 @@
 
 ![SPM](https://img.shields.io/static/v1?label=Swift%20PM&message=%E2%9C%93&color=24C28A&labelColor=444444)
 [![Twitter Follow](https://img.shields.io/twitter/follow/pjechris.svg?label=Follow%20me)](https://twitter.com/pjechris)
-[![Donate using Liberapay](https://img.shields.io/liberapay/patrons/pjechris.svg?logo=liberapay)](https://liberapay.com/pjechris/donate)
 
 A simple domain-oriented library to handle phone numbers! Compatible with all platforms where Swift run (see Compatibility section for more information).
 
